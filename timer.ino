@@ -1,29 +1,29 @@
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 
-#define botao1 12
-#define botao2 13
+#define button1 12
+#define button2 13
 #define led 8
 
-#define endereco 0x27
-#define colunas 16
-#define linhas 2
+#define connection 0x27
+#define columns 16
+#define rows 2
 
-LiquidCrystal_I2C lcd(endereco, colunas, linhas);
+LiquidCrystal_I2C lcd(connection, columns, rows);
 
 float timer = 0;
 
-// Cria uma variável para evitar o time de reiniciar sozinho após o comando para parar (evita entrar no bloco 'if')
-bool verifica_loop = true;
+// Variable to avoid entering the loop after finishing the solve
+bool verify_loop = true;
 
-// Variáveis utilizada pela Milis()
+// Millis() variables
 unsigned long previousMillis = 0;
 const long interval = 20; // 10 = 0.01 seconds
 
 void setup()
 {
-  pinMode(botao1, INPUT);
-  pinMode(botao2, INPUT);
+  pinMode(button1, INPUT);
+  pinMode(button2, INPUT);
   pinMode(led, OUTPUT);
 
   lcd.init();
@@ -33,14 +33,14 @@ void setup()
 
 void loop()
 {
-  if (digitalRead(botao1) == 1 && digitalRead(botao2) == 1 && verifica_loop) {
-    verifica_loop = false; // Altera a variável para false para evitar de entrar nesse bloco de código após a parada.
+  if (digitalRead(button1) == 1 && digitalRead(button2) == 1 && verify_loop) {
+    verify_loop = false;
     timer = 0;
     delay(150);
     digitalWrite(led, HIGH);
 
-    // Inicia um loop para rodar o timer até que os dois botões sejam pressionados simultaneamente.
-    while (!(digitalRead(botao1) == 1 && digitalRead(botao2) == 1)) {
+    // Start the timer until both buttons are pressed simultaneously.
+    while (!(digitalRead(button1) == 1 && digitalRead(button2) == 1)) {
       unsigned long currentMillis = millis();
       if (currentMillis - previousMillis >= interval) {
         lcd.setCursor(6, 1);
@@ -49,8 +49,8 @@ void loop()
         previousMillis = currentMillis;
       }
     }
-    // Retorna a variável 'verifica_loop' para true para permitir que o bloco 'if' rode novamente após a parada.
-    verifica_loop = true;
+    // Return 'verify_loop' to true to allow starting the timer after finishing the solve.
+    verify_loop = true;
     digitalWrite(led, LOW); 
     delay(150);
   }
